@@ -28,4 +28,6 @@ https://stackoverflow.com/questions/52074362/how-to-connect-powershell-script-to
 
 
 
-yo creo que es mejor coger el archivo entero, base64, cifrado aes y subirlo al server y chimpum. mejor que
+
+
+https://gist.github.com/mdonkers/63e115cc0c79b4f6b8b3a6b797e485c7

