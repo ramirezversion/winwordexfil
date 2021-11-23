@@ -9,3 +9,4 @@ Write code for Windows 10 that:
     - Searches for Word processes and extracts all text written (both for already open documents and for new Word instances).
     - Send the gathered data to a server.
     
+--test
