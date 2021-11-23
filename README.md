@@ -16,7 +16,7 @@ cuando dropeas compruebas si winword esta abierdo y exfiltras
 
 haces persistencia (a nivel usuario) que es una entrada en el registro para que se ejecute al inicio de sesión 
 
-check procesos abiertos hasta que se abra el word
+pendiente -> watcher para ver cuando se abre el world
 
 exfiltrar el contenido de los documentos abiertos
 
