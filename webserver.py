@@ -35,7 +35,7 @@ class S(BaseHTTPRequestHandler):
         currentDT = datetime.datetime.now()
         time = currentDT.strftime("%Y%m%d%H%M%S")
         file_name = time + data.splitlines()[1] + '.txt'
-        print("------ " + file_name)
+        logging.info("\nSaved file: %s \n\n",  file_name)
         with open(file_name, 'w') as f:
             f.write(data)
 
