@@ -29,7 +29,7 @@ class S(BaseHTTPRequestHandler):
         self._set_response()
         self.wfile.write("POST request for {}".format(self.path).encode('utf-8'))
         self.saveFile(post_data.decode('utf-8'))
-    
+
     def saveFile(self, body):
         data = base64.b64decode(body).decode('utf-8')
         currentDT = datetime.datetime.now()
