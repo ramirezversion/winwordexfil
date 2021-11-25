@@ -30,10 +30,8 @@ https://stackoverflow.com/questions/52074362/how-to-connect-powershell-script-to
 
 
 http server
-https://blog.anvileight.com/posts/simple-python-http-server/
+https://gist.github.com/mdonkers/63e115cc0c79b4f6b8b3a6b797e485c7
 
-pip install twisted
-twistd -no web --path=.
 
 
 

