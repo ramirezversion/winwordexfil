@@ -1,5 +1,6 @@
 # winwordexfil
-A kind of malware to exfiltrate Word documents text written
+
+Novartis technical test
 
 Write code for Windows 10 that:
 
@@ -29,9 +30,30 @@ https://stackoverflow.com/questions/52074362/how-to-connect-powershell-script-to
 
 
 
-http server
-https://gist.github.com/mdonkers/63e115cc0c79b4f6b8b3a6b797e485c7
+## Exfiltration http server
 
+A simple python http server has been developed serving the payload for the fileless attack implementing GET method and receiving the exfiltration data through POST requests. The main code for the implementation comes from following link with the addition of other functionalities like serving files and creating files with decoded exfiltrated data.
+<https://gist.github.com/mdonkers/63e115cc0c79b4f6b8b3a6b797e485c7>
+
+During the first execution (infection) or when the computer is rebooted the payload is loaded from the server into memory executing it.
+
+![](./img/get-request.png)
+
+When the software fins that WinWord process starts, it send each 30 seconds the list of words to the server by a POST request encoding data y Base64. The server receives those data and created a file into disk with decoded data.
+
+![](./img/post-request.png)
+
+![](./img/server-file.png)
+
+![](./img/open-file.png)
+
+## Enhancements
+
+It is necessary to mention here that there are a huge number of features that can be added for AV bypassing and make more difficult possible forensics tasks
+
+The software implements a basic bypass of possible DLP protections the exfiltrated data is encoded in Base64 before sending to the server. A better approach can be cyphering the payload with dynamic keys encryption gotten from the server.
+
+The PowerShell code is not obfuscated in any way making easier the comprehension of the reader. A useful tool to do that is for example <https://github.com/danielbohannon/Invoke-Obfuscation>
 
 
 
