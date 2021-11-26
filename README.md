@@ -10,6 +10,10 @@ Write code for Windows 10 that:
 
 ## Solution
 
+### Demo
+
+![Persistence](./img/demo.gif)
+
 ### Persistence
 
 The persistence in the execution of this software is implemented by adding an entry in the registry path: `HKCU\Software\Microsoft\Windows\CurrentVersion\Run` which is executed each time the user log in.
@@ -78,7 +82,7 @@ It is necessary to mention here that there are a huge number of features that ca
 
 The software implements a basic bypass of possible DLP protections the exfiltrated data is encoded in Base64 before sending to the server. A better approach can be cyphering the payload with dynamic keys encryption gotten from the server.
 
-The PowerShell code is not obfuscated in any way making easier the comprehension of the reader. A useful tool to do that is for example <https://github.com/danielbohannon/Invoke-Obfuscation>.
+The PowerShell code is not obfuscated in any way making easier the comprehension of the reader. A useful tool to do that is for example <https://github.com/trustedsec/unicorn>.
 
 If more advanced techniques are required, a better approach could be creating the  software as dll file and inject the code into a running process using the Reflective PE Injection <https://github.com/PowerShellMafia/PowerSploit/blob/master/CodeExecution/Invoke-ReflectivePEInjection.ps1>. Furthermore, it could be possible to create a hook into Win32 API functions NtQuerySystemInformation acting as a Rootkit hiding processes from the Task Manager and NtCreateUserProcess to launch the exfiltration method when the process WinWord starts.
 
