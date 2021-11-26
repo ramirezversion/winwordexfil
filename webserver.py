@@ -3,6 +3,8 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 import logging
 import base64
 import datetime
+from pyfiglet import Figlet
+
 
 class S(BaseHTTPRequestHandler):
     def getContent(self, content_path):
@@ -43,6 +45,10 @@ def run(server_class=HTTPServer, handler_class=S, port=8080):
     logging.basicConfig(level=logging.INFO)
     server_address = ('', port)
     httpd = server_class(server_address, handler_class)
+
+    custom_fig = Figlet(font='poison')
+    logging.info(custom_fig.renderText('NVTS c2c'))
+
     logging.info('Starting httpd...\n')
     try:
         httpd.serve_forever()

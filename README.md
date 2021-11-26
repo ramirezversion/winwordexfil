@@ -49,7 +49,7 @@ When the software fins that WinWord process starts, it send each 30 seconds the 
 
 ## Enhancements
 
-It is necessary to mention here that there are a huge number of features that can be added for AV bypassing and make more difficult possible forensics tasks
+It is necessary to mention here that there are a huge number of features that can be added for AV bypassing and make more difficult possible forensics tasks.
 
 The software implements a basic bypass of possible DLP protections the exfiltrated data is encoded in Base64 before sending to the server. A better approach can be cyphering the payload with dynamic keys encryption gotten from the server.
 
