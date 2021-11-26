@@ -32,6 +32,8 @@ A very basic example of a VisualBasic macro has been added just to simulate a po
 
 ### Little privileges as possible
 
+The code does not need any special privilege, all of it can be executed into the system only with user privileges.
+
 ### Searches for Word processes and extracts all text written
 
 ### Exfiltration http server
@@ -66,8 +68,8 @@ It is necessary to mention here that there are a huge number of features that ca
 
 The software implements a basic bypass of possible DLP protections the exfiltrated data is encoded in Base64 before sending to the server. A better approach can be cyphering the payload with dynamic keys encryption gotten from the server.
 
-The PowerShell code is not obfuscated in any way making easier the comprehension of the reader. A useful tool to do that is for example <https://github.com/danielbohannon/Invoke-Obfuscation>
+The PowerShell code is not obfuscated in any way making easier the comprehension of the reader. A useful tool to do that is for example <https://github.com/danielbohannon/Invoke-Obfuscation>.
 
-If more advanced techniques are required, a better approach could be creating the  software as dll file and inject the code into a running process using the Reflective PE Injection. Furthermore, it could be possible to create a hook into Win32 API functions NtQuerySystemInformation acting as a Rootkit hiding processes from the Task Manager and NtCreateUserProcess to launch the exfiltration method when the process WinWord starts.
+If more advanced techniques are required, a better approach could be creating the  software as dll file and inject the code into a running process using the Reflective PE Injection <https://github.com/PowerShellMafia/PowerSploit/blob/master/CodeExecution/Invoke-ReflectivePEInjection.ps1>. Furthermore, it could be possible to create a hook into Win32 API functions NtQuerySystemInformation acting as a Rootkit hiding processes from the Task Manager and NtCreateUserProcess to launch the exfiltration method when the process WinWord starts.
 
-For increasing the possibilities of a first execution of the software, modern vulnerabilities like Microsoft MSHTML Remote Code Execution can be used. Also, other drop techniques could be useful like creating a WASM application and try to make the user to visit it and executes the code hiding like a browser update.
+For increasing the possibilities of a first execution of the software, modern vulnerabilities like Microsoft MSHTML Remote Code Execution can be used <https://github.com/lockedbyte/CVE-2021-40444>. Also, other drop techniques could be useful like creating a WASM application and try to make the user to visit it and executes the code hiding like a browser update.
